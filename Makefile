@@ -6,13 +6,16 @@ OPT=-g -O0
 OPT_NORME=-Wall -Werror -Wextra -Wconversion -ansi -Wpedantic -Wno-unused-parameter -std=gnu11
 
 ###################
-prog: prog.o lib_surface.o
+prog: prog.o lib_surface.o lib_2d.o
 	gcc ${OPT} ${OPT_NORME} -march=native $^ -o $@ -lm -lSDL2
 
 run: prog
 	./prog
 
 %.o: %.c %.h
+	gcc ${OPT} ${OPT_NORME} -c -march=native -o $@ $<
+
+prog.o: prog.c
 	gcc ${OPT} ${OPT_NORME} -c -march=native -o $@ $<
 
 ###################

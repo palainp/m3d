@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include "lib_surface.h"
+#include "lib_2d.h"
 
 #define DUREE 10*60
 
@@ -45,6 +46,12 @@ int main(int argc, char **argv)
 	timestart = SDL_GetTicks();
 	oldtime = timestart;
 
+	t_triangle2d *t = definirTriangle2d( \
+		definirPoint2d(0,0), \
+		definirPoint2d(RX/2,RY), \
+		definirPoint2d(RX,RY/2));
+
+
 	while (++i < DUREE * 60 && !quit_requested)	// DUREE " * 60FPS
 	{
 		effacerEcran(surface);
@@ -53,6 +60,7 @@ int main(int argc, char **argv)
 			quit_requested = handle_events();
 		}
 
+		afficherTriangle2d(surface, t, BLANC);
 		majEcran(surface);
 
 		/* Framerate fixe a env 60 FPS max */
@@ -65,6 +73,7 @@ int main(int argc, char **argv)
 	}
 
 	libererFenetre(surface);
+	libererTriangle2d(t);
 
 	return 0;
 }
