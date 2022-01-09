@@ -19,6 +19,10 @@ void libererPoint2d(t_point2d *p)
 
 t_triangle2d* definirTriangle2d(t_point2d* a, t_point2d* b, t_point2d* c)
 {
+	assert(a!=NULL);
+	assert(b!=NULL);
+	assert(c!=NULL);
+
 	t_triangle2d *t = (t_triangle2d*)malloc(sizeof(t_triangle2d));
 	if (t!=NULL)
 	{
@@ -31,6 +35,8 @@ t_triangle2d* definirTriangle2d(t_point2d* a, t_point2d* b, t_point2d* c)
 
 void libererTriangle2d(t_triangle2d *t)
 {
+	assert(t!=NULL);
+
 	libererPoint2d(t->abc[0]);
 	libererPoint2d(t->abc[1]);
 	libererPoint2d(t->abc[2]);
@@ -39,6 +45,8 @@ void libererTriangle2d(t_triangle2d *t)
 
 void afficherCoordonneesTriangle2d(t_triangle2d *t)
 {
+	assert(t!=NULL);
+
 	for (size_t i=0; i<3; ++i)
 	{
 		printf("(%lu) %d %d\t", i, t->abc[i]->x, t->abc[i]->y);
@@ -48,17 +56,17 @@ void afficherCoordonneesTriangle2d(t_triangle2d *t)
 
 void _echangerPoint2d(t_triangle2d *t, size_t i, size_t j)
 {
-	int tmp = t->abc[i]->x;
-	t->abc[i]->x = t->abc[j]->x;
-	t->abc[j]->x = tmp;
+	assert(t!=NULL);
 
-	tmp = t->abc[i]->y;
-	t->abc[i]->y = t->abc[j]->y;
-	t->abc[j]->y = tmp;
+	t_point2d* tmp = t->abc[i];
+	t->abc[i] = t->abc[j];
+	t->abc[j] = tmp;
 }
 
 void _trierSommets(t_triangle2d *t)
 {
+	assert(t!=NULL);
+
 	if (t->abc[0]->y > t->abc[1]->y)
 	{
 		_echangerPoint2d(t, 0, 1);
@@ -75,7 +83,10 @@ void _trierSommets(t_triangle2d *t)
 
 void _majMinMax(t_surface *s, t_triangle2d *t, size_t i, size_t j)
 {
+	assert(s!=NULL);
+	assert(t!=NULL);
 	assert(i<j);
+
 	if (t->abc[i]->y < t->abc[j]->y)
 	{
 		double dx = ((double)(t->abc[i]->x - t->abc[j]->x))/(t->abc[i]->y - t->abc[j]->y);
@@ -95,6 +106,9 @@ void _majMinMax(t_surface *s, t_triangle2d *t, size_t i, size_t j)
 
 void afficherTriangle2d(t_surface *s, t_triangle2d *t, Uint32 couleur)
 {
+	assert(s!=NULL);
+	assert(t!=NULL);
+
 	_trierSommets(t);
 
 	_majMinMax(s, t, 0, 1);

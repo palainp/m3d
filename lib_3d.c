@@ -23,11 +23,16 @@ void libererPoint3d(t_point3d *p)
 
 t_point3d* copierPoint3d(t_point3d* p)
 {
+	assert(p!=NULL);
+
 	return definirPoint3d(p->xyzt[0], p->xyzt[1], p->xyzt[2]);
 }
 
 static void _copierPoint3d(t_point3d* dest, t_point3d *src)
 {
+	assert(dest!=NULL);
+	assert(src!=NULL);
+
 	memcpy(dest->xyzt, src->xyzt, 4*sizeof(double));
 }
 
@@ -51,6 +56,10 @@ void libererVecteur3d(t_vecteur3d *p)
 
 t_triangle3d* definirTriangle3d(t_point3d* a, t_point3d* b, t_point3d* c)
 {
+	assert(a!=NULL);
+	assert(b!=NULL);
+	assert(c!=NULL);
+
 	t_triangle3d *t = (t_triangle3d*)malloc(sizeof(t_triangle3d));
 	if (t!=NULL)
 	{
@@ -63,6 +72,8 @@ t_triangle3d* definirTriangle3d(t_point3d* a, t_point3d* b, t_point3d* c)
 
 void libererTriangle3d(t_triangle3d *t)
 {
+	assert(t!=NULL);
+
 	libererPoint3d(t->abc[0]);
 	libererPoint3d(t->abc[1]);
 	libererPoint3d(t->abc[2]);
@@ -71,6 +82,9 @@ void libererTriangle3d(t_triangle3d *t)
 
 void afficherTriangle3d(t_surface *s, t_triangle3d *t, Uint32 couleur)
 {
+	assert(s!=NULL);
+	assert(t!=NULL);
+
 	t_triangle2d *t2d = definirTriangle2d(\
 		definirPoint2d((int)(t->abc[0]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[0]->xyzt[1]+t_surface_y(s)/2)), \
 		definirPoint2d((int)(t->abc[1]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[1]->xyzt[1]+t_surface_y(s)/2)), \
@@ -85,6 +99,9 @@ void afficherTriangle3d(t_surface *s, t_triangle3d *t, Uint32 couleur)
 
 void translationTriangle3d(t_triangle3d *t, t_vecteur3d* v)
 {
+	assert(t!=NULL);
+	assert(v!=NULL);
+
 	double mat[4][4] = {\
 		{1, 0, 0, v->xyzt[0]}, \
 		{0, 1, 0, v->xyzt[1]}, \
@@ -96,6 +113,9 @@ void translationTriangle3d(t_triangle3d *t, t_vecteur3d* v)
 
 void rotationTriangle3d(t_triangle3d *t, t_point3d *c, double x, double y, double z)
 {
+	assert(t!=NULL);
+	assert(c!=NULL);
+
 	double tra1[4][4] = {\
 		{1, 0, 0, -c->xyzt[0]}, \
 		{0, 1, 0, -c->xyzt[1]}, \
@@ -145,6 +165,8 @@ void rotationTriangle3d(t_triangle3d *t, t_point3d *c, double x, double y, doubl
 
 void homothetieTriangle3d(t_triangle3d *t, double x, double y, double z)
 {
+	assert(t!=NULL);
+
 	double mat[4][4] = {\
 		{x, 0, 0, 0}, \
 		{0, y, 0, 0}, \
@@ -156,6 +178,8 @@ void homothetieTriangle3d(t_triangle3d *t, double x, double y, double z)
 
 void transformationTriangle3d(t_triangle3d *t, double mat[4][4])
 {
+	assert(t!=NULL);
+
 	t_point3d p;
 	for (size_t i=0; i<3; ++i)
 	{

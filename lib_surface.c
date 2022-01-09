@@ -55,6 +55,8 @@ t_surface *creerFenetre(int x, int y)
 
 void libererFenetre(t_surface * surface)
 {
+	assert(surface!=NULL);
+
 	free(t_surface_xmin(surface));
 	free(t_surface_xmax(surface));
 	free(t_surface_ecran(surface));
@@ -66,11 +68,15 @@ void libererFenetre(t_surface * surface)
 
 void effacerEcran(t_surface * surface)
 {
+	assert(surface!=NULL);
+
 	memset(t_surface_ecran(surface), 0, (size_t)(t_surface_x(surface) * t_surface_y(surface)) * sizeof(Uint32));
 }
 
 void majEcran(t_surface * surface)
 {
+	assert(surface!=NULL);
+
 	SDL_UpdateTexture(t_surface_texture(surface), NULL, t_surface_ecran(surface), t_surface_x(surface) * (int)sizeof(Uint32));	// Ecran -> Texture
 
 	SDL_RenderClear(t_surface_renderer(surface));
@@ -81,11 +87,16 @@ void majEcran(t_surface * surface)
 
 void definirTitreFenetre(t_surface * surface, const char *titre)
 {
+	assert(surface!=NULL);
+	assert(titre!=NULL);
+
 	SDL_SetWindowTitle(t_surface_window(surface), titre);
 }
 
 void remplirPixel(t_surface * surface, int x, int y, Uint32 pixel)
 {
+	assert(surface!=NULL);
+
 	unsigned char *p = (unsigned char *)t_surface_ecran(surface) + (y * t_surface_x(surface) + x) * (int)sizeof(Uint32);
 	*(Uint32 *) p = pixel;
 }
@@ -93,6 +104,8 @@ void remplirPixel(t_surface * surface, int x, int y, Uint32 pixel)
 #if 0
 void remplirLigneHorizontale(t_surface * surface, int x, int y, int l, Uint32 pixel)
 {
+	assert(surface!=NULL);
+
 	int i;
 	for (i = 0; i < l; i++) {
 		remplirPixel(surface, x + i, y, pixel);
@@ -101,6 +114,7 @@ void remplirLigneHorizontale(t_surface * surface, int x, int y, int l, Uint32 pi
 #else
 void remplirLigneHorizontale(t_surface * surface, int x, int y, int l, Uint32 pixel)
 {
+	assert(surface!=NULL);
 	assert(x>=0);
 	assert(x<RX);
 	assert(y>=0);

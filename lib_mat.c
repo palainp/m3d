@@ -1,7 +1,10 @@
+#include <assert.h>
 #include "lib_mat.h"
 
 void mult_vecteur(t_point3d* dest, double mat[4][4], t_point3d* src)
 {
+	assert(dest!=NULL);
+	assert(src!=NULL);
 	for (size_t i=0; i<4; ++i)
 	{
 		dest->xyzt[i] = 0;
