@@ -47,10 +47,10 @@ int main(int argc, char **argv)
 	timestart = SDL_GetTicks();
 	oldtime = timestart;
 
-	t_triangle3d *t = definirTriangle3d( \
-		definirPoint3d(0, 0, 0), \
-		definirPoint3d(50, 0, 0), \
-		definirPoint3d(0, -50, 0));
+	t_point3d *p1 = definirPoint3d(0, 0, 0);
+	t_point3d *p2 = definirPoint3d(50, 0, 0);
+	t_point3d *p3 = definirPoint3d(0, -50, 0);
+	t_triangle3d *t = definirTriangle3d(p1, p2, p3);
 	t_vecteur3d *v = definirVecteur3d(2, 3, 0);
 	t_point3d *c = definirPoint3d(-50, 50, 0);
 
@@ -79,6 +79,9 @@ int main(int argc, char **argv)
 	libererTriangle3d(t);
 	libererVecteur3d(v);
 	libererPoint3d(c);
+	libererPoint3d(p1);
+	libererPoint3d(p2);
+	libererPoint3d(p3);
 
 	return 0;
 }

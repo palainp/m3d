@@ -76,7 +76,9 @@ void afficherTriangle3d(t_surface *s, t_triangle3d *t, Uint32 couleur)
 		definirPoint2d((int)(t->abc[1]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[1]->xyzt[1]+t_surface_y(s)/2)), \
 		definirPoint2d((int)(t->abc[2]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[2]->xyzt[1]+t_surface_y(s)/2))
 		);
+#if 0
 	afficherCoordonneesTriangle2d(t2d);
+#endif
 	afficherTriangle2d(s, t2d, couleur);
 	libererTriangle2d(t2d);
 }
