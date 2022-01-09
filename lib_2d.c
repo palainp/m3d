@@ -37,6 +37,15 @@ void libererTriangle2d(t_triangle2d *t)
 	free(t);
 }
 
+void afficherCoordonneesTriangle2d(t_triangle2d *t)
+{
+	for (size_t i=0; i<3; ++i)
+	{
+		printf("(%lu) %d %d\t", i, t->abc[i]->x, t->abc[i]->y);
+	}
+	printf("\n");
+}
+
 void _echangerPoint2d(t_triangle2d *t, size_t i, size_t j)
 {
 	int tmp = t->abc[i]->x;
@@ -87,13 +96,7 @@ void _majMinMax(t_surface *s, t_triangle2d *t, size_t i, size_t j)
 void afficherTriangle2d(t_surface *s, t_triangle2d *t, Uint32 couleur)
 {
 	_trierSommets(t);
-#if 0
-	for (size_t i=0; i<3; ++i)
-	{
-		printf("(%lu) %d %d\t", i, t->abc[i]->x, t->abc[i]->y);
-	}
-	printf("\n");
-#endif
+
 	_majMinMax(s, t, 0, 1);
 	_majMinMax(s, t, 0, 2);
 	_majMinMax(s, t, 1, 2);
