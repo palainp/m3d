@@ -1,6 +1,6 @@
 OPT=-g -O0
 #OPT=-Ofast
-#OPT=-O3
+#OPT=-O3 -DNDEBUG
 
 # gnu11 au lieu de c11 permet d'avoir (entre autre) la definition de M_PI
 OPT_NORME=-Wall -Werror -Wextra -Wconversion -ansi -Wpedantic -Wno-unused-parameter -std=gnu11

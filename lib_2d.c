@@ -70,7 +70,7 @@ void _majMinMax(t_surface *s, t_triangle2d *t, size_t i, size_t j)
 	if (t->abc[i]->y < t->abc[j]->y)
 	{
 		double dx = ((double)(t->abc[i]->x - t->abc[j]->x))/(t->abc[i]->y - t->abc[j]->y);
-		for(int y=t->abc[i]->y; y<=t->abc[j]->y; ++y)
+		for(int y=MAX(0, t->abc[i]->y); y<=MIN(t_surface_y(s)-1, t->abc[j]->y); ++y)
 		{
 			int x = (int)(t->abc[i]->x+(y-t->abc[i]->y)*dx);
 
@@ -86,9 +86,6 @@ void _majMinMax(t_surface *s, t_triangle2d *t, size_t i, size_t j)
 
 void afficherTriangle2d(t_surface *s, t_triangle2d *t, Uint32 couleur)
 {
-	memset(t_surface_xmin(s), RX, RY);
-	memset(t_surface_xmax(s), 0, RY);
-
 	_trierSommets(t);
 #if 0
 	for (size_t i=0; i<3; ++i)
@@ -101,8 +98,10 @@ void afficherTriangle2d(t_surface *s, t_triangle2d *t, Uint32 couleur)
 	_majMinMax(s, t, 0, 2);
 	_majMinMax(s, t, 1, 2);
 
-	for(int y=t->abc[0]->y; y<=t->abc[2]->y; ++y)
+	for(int y=MAX(0, t->abc[0]->y); y<=MIN(t_surface_y(s)-1, t->abc[2]->y); ++y)
 	{
 		remplirLigneHorizontale(s, t_surface_xmin(s)[y], y, t_surface_xmax(s)[y]-t_surface_xmin(s)[y], couleur);
+		t_surface_xmax(s)[y] = 0;
+		t_surface_xmin(s)[y] = t_surface_x(s) - 1;
 	}
 }

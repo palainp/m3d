@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "lib_surface.h"
 
 /**
@@ -42,8 +43,11 @@ t_surface *creerFenetre(int x, int y)
 			libererFenetre(S);
 			S = NULL;
 		} else {
-			memset(t_surface_xmax(S), 0, (size_t)t_surface_y(S) * sizeof(int));
-			memset(t_surface_xmin(S), t_surface_x(S) - 1, (size_t)t_surface_y(S) * sizeof(int));
+			for (size_t i=0; i<(size_t)t_surface_y(S); ++i)
+			{
+				t_surface_xmax(S)[i] = 0;
+				t_surface_xmin(S)[i] = t_surface_x(S) - 1;
+			}
 		}
 	}
 	return S;
@@ -97,6 +101,11 @@ void remplirLigneHorizontale(t_surface * surface, int x, int y, int l, Uint32 pi
 #else
 void remplirLigneHorizontale(t_surface * surface, int x, int y, int l, Uint32 pixel)
 {
+	assert(x>=0);
+	assert(x<RX);
+	assert(y>=0);
+	assert(y<RY);
+
 	int i;
 	// il s'agit d'un ptr sur un Uint32, l'arithmetique des pointeurs fait que l'operation +1 decale directement de sizeof(Uint32) octets, on n'a donc pas le même pb que pour la fonction precedente
 	Uint32 *ptr_ecran = t_surface_ecran(surface) + (y * t_surface_x(surface) + x);
