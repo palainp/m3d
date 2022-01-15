@@ -80,6 +80,13 @@ void libererTriangle3d(t_triangle3d *t)
 	free(t);
 }
 
+double zmoyen(t_triangle3d* t)
+{
+	assert(t!=NULL);
+	return (t->abc[0]->xyzt[2]+t->abc[1]->xyzt[2]+t->abc[2]->xyzt[2])/3;
+}
+
+
 void afficherTriangle3d(t_surface *s, t_triangle3d *t, Uint32 couleur)
 {
 	assert(s!=NULL);

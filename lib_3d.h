@@ -25,6 +25,7 @@ void libererVecteur3d(t_vecteur3d *p);
 
 t_triangle3d* definirTriangle3d(t_point3d* a, t_point3d* b, t_point3d* c);
 void libererTriangle3d(t_triangle3d *t);
+double zmoyen(t_triangle3d* t);
 
 void afficherTriangle3d(t_surface *s, t_triangle3d *t, Uint32 couleur);
 

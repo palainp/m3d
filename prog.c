@@ -4,6 +4,7 @@
 #include "lib_surface.h"
 #include "lib_2d.h"
 #include "lib_3d.h"
+#include "lib_objet3d.h"
 
 #define DUREE 10*60
 
@@ -47,12 +48,9 @@ int main(int argc, char **argv)
 	timestart = SDL_GetTicks();
 	oldtime = timestart;
 
-	t_point3d *p1 = definirPoint3d(0, 0, 0);
-	t_point3d *p2 = definirPoint3d(50, 0, 0);
-	t_point3d *p3 = definirPoint3d(0, -50, 0);
-	t_triangle3d *t = definirTriangle3d(p1, p2, p3);
-	t_vecteur3d *v = definirVecteur3d(2, 3, 0);
-	t_point3d *c = definirPoint3d(-50, 50, 0);
+	t_point3d *ctr = definirPoint3d(10, 20, 30);
+	t_objet3d *cb = cube(50);
+	homothetieObjet3d(cb, 5, 10, 5);
 
 	while (++i < DUREE * 60 && !quit_requested)	// DUREE " * 60FPS
 	{
@@ -62,8 +60,8 @@ int main(int argc, char **argv)
 			quit_requested = handle_events();
 		}
 
-		rotationTriangle3d(t, c, 0, 0, 10);
-		afficherTriangle3d(surface, t, BLANC);
+		rotationObjet3d(cb, ctr, 1, 2, 3);
+		afficherObjet3d(surface, cb);
 		majEcran(surface);
 
 		/* Framerate fixe a env 60 FPS max */
@@ -76,12 +74,8 @@ int main(int argc, char **argv)
 	}
 
 	libererFenetre(surface);
-	libererTriangle3d(t);
-	libererVecteur3d(v);
-	libererPoint3d(c);
-	libererPoint3d(p1);
-	libererPoint3d(p2);
-	libererPoint3d(p3);
+	libererObjet3d(cb);
+	libererPoint3d(ctr);
 
 	return 0;
 }
