@@ -19,6 +19,7 @@ typedef struct {
 
 t_objet3d* objet_vide();
 t_objet3d* cube(int l);
+t_objet3d* fichierObjet3d(const char* fn);
 
 void libererObjet3d(t_objet3d *o);
 void afficherObjet3d(t_surface* s, t_objet3d* o);

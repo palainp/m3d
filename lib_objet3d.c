@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "lib_objet3d.h"
 #include "lib_mat.h"
 
@@ -108,6 +110,82 @@ t_objet3d* cube(int l)
 	libererPoint3d(t[7]);
 
 	o->est_trie = false;
+	return o;
+}
+
+t_objet3d* fichierObjet3d(const char* fn)
+{
+	assert(fn!=NULL);
+
+	FILE* fd = fopen(fn, "r");
+	assert(fd!=NULL);
+
+	t_objet3d *o = objet_vide();
+	assert(o!=NULL);
+
+	t_point3d** t;
+	size_t l=0, max=100;
+	t = (t_point3d**)malloc(max*sizeof(t_point3d*));
+	assert(t!=NULL);
+
+	char ligne[256];
+	while (fgets(ligne, sizeof(ligne), fd)!=NULL)
+	{
+		if (ligne[0]=='v' && (ligne[1]==' ' || ligne[1]=='\t')) // définition d'un point
+		{
+			
+			float x,y,z;
+			size_t j=1;
+			while (!(j==sizeof(ligne) || ligne[j]!=' ' || ligne[j]!='\t')) ++j;
+			assert(j!=sizeof(ligne));
+			assert(ligne[j]!='\n');
+					
+			int r = sscanf(&(ligne[j]), "%f %f %f\n", &x, &y, &z);
+			assert(r!=EOF);
+
+			if (l>=max)
+			{
+				max = (size_t)((double)max*1.5);
+				t = realloc(t, max*sizeof(t_point3d*));
+				assert(t!=NULL);
+			}
+
+//			printf("lecture point (%lu/%lu): %f %f %f\n", l, max, x, y, z);
+
+			t[l] = definirPoint3d(x,y,z);
+			l++;
+		} else if (ligne[0]=='f') {
+			int i,j,k;
+			int in,jn,kn;
+			int it,jt,kt;
+
+			size_t z=1;
+			while (!(z==sizeof(ligne) || ligne[z]!=' ' || ligne[z]!='\t')) ++z;
+			assert(z!=sizeof(ligne));
+			assert(ligne[z]!='\n');
+
+			assert(sscanf(&(ligne[z]), "%d// %d// %d//\n", &i, &j, &k)==3 || \
+				sscanf(&(ligne[z]), "%d//%d %d//%d %d//%d\n", &i, &in, &j, &jn, &k, &kn)==6 || \
+				sscanf(&(ligne[z]), "%d/%d/%d %d/%d/%d %d/%d/%d\n", &i, &it, &in, &j, &jt, &jn, &k, &kt, &kn)==9);
+
+			--i;
+			--j;
+			--k;
+//			printf("lecture face : %d %d %d\n", i, j, k);
+
+			assert((size_t)i<l);
+			assert((size_t)j<l);
+			assert((size_t)k<l);
+			t_triangle3d *tr = definirTriangle3d(t[i], t[j], t[k]);
+			inserer_tete(&(o->faces), creer_maillon(\
+					tr, PALEC));
+		}
+	}
+	for(size_t i=0; i<l; ++i)
+	{
+		libererPoint3d(t[i]);
+	}
+	free(t);
 	return o;
 }
 

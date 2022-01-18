@@ -94,13 +94,17 @@ void _majMinMax(t_surface *s, t_triangle2d *t, size_t i, size_t j)
 		{
 			int x = (int)(t->abc[i]->x+(y-t->abc[i]->y)*dx);
 
-			if (t_surface_xmin(s)[y] > x) t_surface_xmin(s)[y] = x;
-			if (t_surface_xmax(s)[y] < x) t_surface_xmax(s)[y] = x;
+			if (t_surface_xmin(s)[y] > x && x>=0) t_surface_xmin(s)[y] = x;
+			if (t_surface_xmax(s)[y] < x && x<t_surface_x(s)) t_surface_xmax(s)[y] = x;
 
 		}
 	} else { // the > case won't occurs => == case
-		t_surface_xmin(s)[t->abc[j]->y] = MIN(t->abc[i]->x, t->abc[j]->x);
-		t_surface_xmax(s)[t->abc[j]->y] = MAX(t->abc[i]->x, t->abc[j]->x);
+		int xmin = MIN(t->abc[i]->x, t->abc[j]->x);
+		int xmax = MAX(t->abc[i]->x, t->abc[j]->x);
+		int y = t->abc[i]->y;
+
+		if (t_surface_xmin(s)[y] > xmin && xmin>=0) t_surface_xmin(s)[t->abc[j]->y] = xmin;
+		if (t_surface_xmax(s)[y] < xmax && xmax<t_surface_x(s)) t_surface_xmax(s)[t->abc[j]->y] = xmax;
 	}
 }
 
