@@ -200,6 +200,7 @@ void libererObjet3d(t_objet3d *o)
 		liberer_maillon(m);
 		m = s;
 	}
+	free(o);
 }
 
 
