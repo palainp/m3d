@@ -50,9 +50,9 @@ int main(int argc, char **argv)
 
 	t_point3d *ctr = definirPoint3d(10, 20, 30);
 	//t_objet3d *cb = cube(50);
-	t_objet3d* cb = fichierObjet3d("cow_500.obj");
+	t_objet3d* cb = fichierObjet3d("cow-nonormals.obj", BLANC, ROUGEC);
 	
-	homothetieObjet3d(cb, 50, 100, 50);
+	homothetieObjet3d(cb, 50, 50, 50);
 
 	while (++i < DUREE * 60 && !quit_requested)	// DUREE " * 60FPS
 	{
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 			quit_requested = handle_events();
 		}
 
-		rotationObjet3d(cb, ctr, 1, 2, 3);
+		rotationObjet3d(cb, ctr, 0.1, 0.2, 0.3);
 		afficherObjet3d(surface, cb);
 		majEcran(surface);
 

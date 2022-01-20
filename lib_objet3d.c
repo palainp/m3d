@@ -113,7 +113,7 @@ t_objet3d* cube(int l)
 	return o;
 }
 
-t_objet3d* fichierObjet3d(const char* fn)
+t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2)
 {
 	assert(fn!=NULL);
 
@@ -128,9 +128,11 @@ t_objet3d* fichierObjet3d(const char* fn)
 	t = (t_point3d**)malloc(max*sizeof(t_point3d*));
 	assert(t!=NULL);
 
+	size_t nl = 0;
 	char ligne[256];
 	while (fgets(ligne, sizeof(ligne), fd)!=NULL)
 	{
+		++nl;
 		if (ligne[0]=='v' && (ligne[1]==' ' || ligne[1]=='\t')) // définition d'un point
 		{
 			
@@ -141,7 +143,10 @@ t_objet3d* fichierObjet3d(const char* fn)
 			assert(ligne[j]!='\n');
 					
 			int r = sscanf(&(ligne[j]), "%f %f %f\n", &x, &y, &z);
-			assert(r!=EOF);
+			if (r==EOF)
+			{
+				fprintf(stderr, "%s:%d Syntax Error %s:%lu\n", __FILE__, __LINE__, fn, nl);
+			}
 
 			if (l>=max)
 			{
@@ -164,9 +169,13 @@ t_objet3d* fichierObjet3d(const char* fn)
 			assert(z!=sizeof(ligne));
 			assert(ligne[z]!='\n');
 
-			assert(sscanf(&(ligne[z]), "%d// %d// %d//\n", &i, &j, &k)==3 || \
+			if (!(sscanf(&(ligne[z]), "%d// %d// %d//\n", &i, &j, &k)==3 || \
+				sscanf(&(ligne[z]), "%d %d %d\n", &i, &j, &k)==3 || \
 				sscanf(&(ligne[z]), "%d//%d %d//%d %d//%d\n", &i, &in, &j, &jn, &k, &kn)==6 || \
-				sscanf(&(ligne[z]), "%d/%d/%d %d/%d/%d %d/%d/%d\n", &i, &it, &in, &j, &jt, &jn, &k, &kt, &kn)==9);
+				sscanf(&(ligne[z]), "%d/%d/%d %d/%d/%d %d/%d/%d\n", &i, &it, &in, &j, &jt, &jn, &k, &kt, &kn)==9))
+			{
+				fprintf(stderr, "%s:%d Syntax Error %s:%lu\n", __FILE__, __LINE__, fn, nl);
+			}
 
 			--i;
 			--j;
@@ -178,7 +187,7 @@ t_objet3d* fichierObjet3d(const char* fn)
 			assert((size_t)k<l);
 			t_triangle3d *tr = definirTriangle3d(t[i], t[j], t[k]);
 			inserer_tete(&(o->faces), creer_maillon(\
-					tr, PALEC));
+					tr, couleur_entre(rand()%100, c1, c2)));
 		}
 	}
 	for(size_t i=0; i<l; ++i)
@@ -203,7 +212,6 @@ void libererObjet3d(t_objet3d *o)
 	free(o);
 }
 
-
 void afficherObjet3d(t_surface* s, t_objet3d* o)
 {
 	assert(s!=NULL);
@@ -220,6 +228,127 @@ void afficherObjet3d(t_surface* s, t_objet3d* o)
 	}
 }
 
+size_t nbFacesObjet3d(t_objet3d* o)
+{
+	assert(o!=NULL);
+
+	t_maillon *m = o->faces;
+	size_t n=0;
+	while (m!=NULL)
+	{
+		++n;
+		m = m->pt_suiv;
+	}
+	return n;
+}
+
+#if 1
+void decoupeListe(t_liste *a, t_liste *b) // O(n)
+{
+	t_maillon *rapide, *lent, *prec_lent;
+
+	prec_lent = NULL;
+	lent = rapide = *a;
+	while (!(rapide==NULL || rapide->pt_suiv==NULL))
+	{
+		rapide = rapide->pt_suiv;
+		rapide = rapide->pt_suiv;
+		prec_lent = lent;
+		lent = lent->pt_suiv;
+	}
+	if (prec_lent!=NULL)
+	{
+		prec_lent->pt_suiv = NULL;
+	}
+	*b = lent;
+}
+
+void fusionListe(t_liste *a, t_liste b)
+{
+	t_maillon *res, *ptr_fin, *ptr_a, *ptr_b;
+
+	res = NULL;
+	ptr_fin = NULL;
+	ptr_a = *a;
+	ptr_b = b;
+	while (!(ptr_a==NULL || ptr_b==NULL))
+	{
+		if (zmoyen(ptr_a->t)<zmoyen(ptr_b->t))
+		{
+			t_maillon *tmp = ptr_a->pt_suiv;
+			if (ptr_fin!=NULL)
+			{
+				inserer_apres(ptr_fin, ptr_a);
+			} else {
+				inserer_tete(&res, ptr_a);
+			}
+			ptr_fin = ptr_a;
+			ptr_a = tmp;
+		} else {
+			t_maillon *tmp = ptr_b->pt_suiv;
+			if (ptr_fin!=NULL)
+			{
+				inserer_apres(ptr_fin, ptr_b);
+			} else {
+				inserer_tete(&res, ptr_b);
+			}
+			ptr_fin = ptr_b;
+			ptr_b = tmp;
+		}
+	}
+	while (!(ptr_a==NULL))
+	{
+		t_maillon *tmp = ptr_a->pt_suiv;
+		if (ptr_fin!=NULL)
+		{
+			inserer_apres(ptr_fin, ptr_a);
+		} else {
+			inserer_tete(&res, ptr_a);
+		}
+		ptr_fin = ptr_a;
+		ptr_a = tmp;
+	}
+	while (!(ptr_b==NULL))
+	{
+		t_maillon *tmp = ptr_b->pt_suiv;
+		if (ptr_fin!=NULL)
+		{
+			inserer_apres(ptr_fin, ptr_b);
+		} else {
+			inserer_tete(&res, ptr_b);
+		}
+		ptr_fin = ptr_b;
+		ptr_b = tmp;
+	}
+
+	*a = res;
+}
+
+void trierListe_rec(t_liste *a)
+{
+	if (*a==NULL || (*a)->pt_suiv==NULL)
+	{
+		return;
+	} else {
+		t_liste b;
+		decoupeListe(a, &b);
+		trierListe_rec(a);
+		trierListe_rec(&b);
+		fusionListe(a, b);
+	}
+}
+
+void trierObjet3d(t_objet3d *o)			// O(n*log(n))
+{
+	assert(o!=NULL);
+
+	if (o->est_trie)
+		return;
+
+	trierListe_rec(&(o->faces));
+	o->est_trie = true;
+}
+#else
 void trierObjet3d(t_objet3d *o)			// O(n^2)
 {
 	assert(o!=NULL);
@@ -264,11 +393,13 @@ void trierObjet3d(t_objet3d *o)			// O(n^2)
 			}
 			prec_i = m;
 		} else {
+			prec_i = i;
 			i = i->pt_suiv;
 		}
 	}
+	o->est_trie = true;
 }
-
+#endif
 
 void translationObjet3d(t_objet3d *o, t_vecteur3d* v)
 {
