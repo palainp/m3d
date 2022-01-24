@@ -45,10 +45,20 @@ t_objet3d* objet_vide()
 	if (o!=NULL)
 	{
 		o->est_trie = true;
+		o->est_camera = false;
 		o->faces = NULL;
 	}
 	return o;
 }
+
+t_objet3d* camera()
+{
+	t_objet3d *o = objet_vide();
+	assert(o!=NULL);
+	o->est_camera = true;
+	return o;
+}
+
 
 t_objet3d* cube(int l)
 {

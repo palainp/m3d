@@ -29,3 +29,18 @@ void mult_mat(double dest[4][4], double mat[4][4], double src[4][4])
 		}
 	}
 }
+
+void copier_mat(double dest[4][4], double src[4][4])
+{
+#if 0
+	for (size_t i=0; i<4; ++i)
+	{
+		for (size_t j=0; j<4; ++j)
+		{
+			dest[i][j] = src[i][j];
+		}
+	}
+#else
+	memcpy(dest, src, 4*4*sizeof(double));
+#endif
+}
