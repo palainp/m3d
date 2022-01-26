@@ -21,4 +21,8 @@ void afficherScene3d(t_surface *s, t_scene3d scene);
 
 void libererScene3d(t_scene3d scene);
 
+void translationScene3d(t_scene3d scn, t_vecteur3d* v);
+void rotationScene3d(t_scene3d scn, t_point3d *c, double x, double y, double z);
+void transformationScene3d(t_scene3d scn, double montant[4][4], double descendant[4][4]);
+
 #endif

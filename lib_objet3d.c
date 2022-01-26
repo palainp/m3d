@@ -238,7 +238,43 @@ void afficherObjet3d(t_surface* s, t_objet3d* o)
 	}
 }
 
-size_t nbFacesObjet3d(t_objet3d* o)
+t_objet3d* copierObjet3d(t_objet3d* o)
+{
+	assert(o!=NULL);
+
+	t_objet3d* cpy = objet_vide();
+	assert(cpy!=NULL);
+
+	t_maillon *m = o->faces;
+	while (m!=NULL)
+	{
+		inserer_tete(&(cpy->faces), creer_maillon(\
+				copierTriangle3d(m->t), m->c));
+		m = m->pt_suiv;
+	}
+
+	return cpy;
+}
+
+void concatenerObjet3d(t_objet3d *a, t_objet3d *b)
+{
+	assert(a!=NULL);
+	assert(b!=NULL);
+
+	t_maillon *m = b->faces;
+	while (m!=NULL)
+	{
+		t_maillon *suiv_m = m->pt_suiv;
+		inserer_tete(&(a->faces), m);
+		m = suiv_m;
+	}
+
+	b->faces = NULL;
+	libererObjet3d(b);
+}
+
+#if 0
+static size_t nbFacesObjet3d(t_objet3d* o)
 {
 	assert(o!=NULL);
 
@@ -251,8 +287,9 @@ size_t nbFacesObjet3d(t_objet3d* o)
 	}
 	return n;
 }
+#endif
 
-#if 1
+#if 0
 void decoupeListe(t_liste *a, t_liste *b) // O(n)
 {
 	t_maillon *rapide, *lent, *prec_lent;

@@ -80,6 +80,12 @@ void libererTriangle3d(t_triangle3d *t)
 	free(t);
 }
 
+t_triangle3d* copierTriangle3d(t_triangle3d* t)
+{
+	assert(t!=NULL);
+	return definirTriangle3d(copierPoint3d(t->abc[0]), copierPoint3d(t->abc[1]), copierPoint3d(t->abc[2]));
+}
+
 double zmoyen(t_triangle3d* t)
 {
 	assert(t!=NULL);

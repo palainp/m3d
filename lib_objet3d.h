@@ -24,6 +24,8 @@ t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2);
 
 void libererObjet3d(t_objet3d *o);
 void afficherObjet3d(t_surface* s, t_objet3d* o);
+t_objet3d* copierObjet3d(t_objet3d* o);
+void concatenerObjet3d(t_objet3d *a, t_objet3d *b); // a=a+b (b n'aura plus de sens ensuite)
 
 void trierObjet3d(t_objet3d *o);
 
