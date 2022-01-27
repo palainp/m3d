@@ -53,6 +53,7 @@ static void _construction_rec(t_surface *s, t_node* pt_node, double mat[4][4], t
 		t_objet3d *tmp_obj = copierObjet3d(pt_node->pt_objet);
 		transformationObjet3d(tmp_obj, tmp_mat);
 		concatenerObjet3d(o, tmp_obj);
+		libererObjet3d(tmp_obj);
 	}
 
 	_construction_rec(s, pt_node->pt_fils, tmp_mat, o);
@@ -82,10 +83,8 @@ void afficherScene3d(t_surface *s, t_scene3d scene)
 
 	t_objet3d* o = objet_vide();
 
-	if (prec_node != NULL) // camera is not the root
-		_construction_rec(s, prec_node, mat, o);
-	else                   // camera IS the root
-		_construction_rec(s, scene->pt_fils, mat, o);
+	assert(prec_node!=NULL);
+	_construction_rec(s, prec_node, mat, o);
 
 	trierObjet3d(o);
 	afficherObjet3d(s, o);
@@ -100,6 +99,7 @@ void libererScene3d(t_scene3d scene)
 	libererScene3d(scene->pt_fils);
 	libererScene3d(scene->pt_frere);
 	libererObjet3d(scene->pt_objet);
+	free(scene);
 }
 
 void translationScene3d(t_scene3d scn, t_vecteur3d* v)
@@ -186,9 +186,9 @@ void rotationScene3d(t_scene3d scn, t_point3d *c, double x, double y, double z)
 	mult_mat(tmp, rotZ, tmp2);
 	mult_mat(rotation, tra2, tmp);
 
-	mult_mat(tmp, rotXinv, tra1);
+	mult_mat(tmp, rotZinv, tra1);
 	mult_mat(tmp2, rotYinv, tmp);
-	mult_mat(tmp, rotZinv, tmp2);
+	mult_mat(tmp, rotXinv, tmp2);
 	mult_mat(rotation_inverse, tra2, tmp);
 
 	transformationScene3d(scn, rotation_inverse, rotation);

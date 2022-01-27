@@ -253,6 +253,7 @@ t_objet3d* copierObjet3d(t_objet3d* o)
 		m = m->pt_suiv;
 	}
 
+	cpy->est_trie = false;
 	return cpy;
 }
 
@@ -269,8 +270,8 @@ void concatenerObjet3d(t_objet3d *a, t_objet3d *b)
 		m = suiv_m;
 	}
 
+	a->est_trie = false;
 	b->faces = NULL;
-	libererObjet3d(b);
 }
 
 #if 0
@@ -289,7 +290,7 @@ static size_t nbFacesObjet3d(t_objet3d* o)
 }
 #endif
 
-#if 0
+#if 1
 void decoupeListe(t_liste *a, t_liste *b) // O(n)
 {
 	t_maillon *rapide, *lent, *prec_lent;
