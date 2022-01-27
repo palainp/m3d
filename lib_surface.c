@@ -116,9 +116,9 @@ void remplirLigneHorizontale(t_surface * surface, int x, int y, int l, Uint32 pi
 {
 	assert(surface!=NULL);
 	assert(x>=0);
-	assert(x<RX);
+	assert(x<t_surface_x(surface));
 	assert(y>=0);
-	assert(y<RY);
+	assert(y<t_surface_y(surface));
 
 	int i;
 	// il s'agit d'un ptr sur un Uint32, l'arithmetique des pointeurs fait que l'operation +1 decale directement de sizeof(Uint32) octets, on n'a donc pas le même pb que pour la fonction precedente

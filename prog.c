@@ -58,13 +58,13 @@ int main(int argc, char **argv)
 	t_vecteur3d *v2 = definirVecteur3d(0,-80,0);
 	t_vecteur3d *v3 = definirVecteur3d(0,0,100);
 
-	t_objet3d* cb = fichierObjet3d("cube.obj", JAUNEC, VERTC);
+	t_objet3d* cb = fichierObjet3d("cube.obj", BLANC, ROUGEC);
 	homothetieObjet3d(cb, 60, 150, 150);
 	rotationObjet3d(cb, origine, 180, 0, 0);
 	translationObjet3d(cb, v2);
 
-	t_objet3d* cow = fichierObjet3d("cube.obj", BLANC, ROUGEC);
-	homothetieObjet3d(cow, 60, 150, 150);
+	t_objet3d* cow = fichierObjet3d("cow-nonormals.obj", BLANC, NOIR);
+	homothetieObjet3d(cow, 50, 50, 50);
 	translationObjet3d(cow, v1);
 
 	t_objet3d* cmr = camera();
