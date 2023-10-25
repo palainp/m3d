@@ -47,7 +47,7 @@ t_objet3d* cube(int l)
 	assert(o!=NULL);
 
 	o->np = 8;
-	o->p = (t_point3d**)malloc(o->np*sizeof(t_point3d*));
+	o->p = (t_point3d*)malloc(o->np*sizeof(t_point3d));
 	assert(o->p!=NULL);
 	o->p[0] = definirPoint3d(xm, ym, zm);
 	o->p[1] = definirPoint3d(xM, ym, zm);
@@ -97,7 +97,7 @@ t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2)
 
 	size_t l=0;
 	o->np = 100;
-	o->p = (t_point3d**)malloc(o->np*sizeof(t_point3d*));
+	o->p = (t_point3d*)malloc(o->np*sizeof(t_point3d));
 	assert(o->p!=NULL);
 
 	size_t lf=0;
@@ -128,7 +128,7 @@ t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2)
 			if (l>=o->np)
 			{
 				o->np = (size_t)((double)o->np*1.5);
-				o->p = realloc(o->p, o->np*sizeof(t_point3d*));
+				o->p = realloc(o->p, o->np*sizeof(t_point3d));
 				assert(o->p!=NULL);
 			}
 
@@ -202,10 +202,8 @@ void afficherObjet3d(t_surface* s, t_objet3d* o)
 
 	for(size_t i=0; i<o->nfaces; ++i)
 	{
-		// FIXME: ici on a une allocation mémoire pénible dans definirTriangle3d
-		t_triangle3d *t = definirTriangle3d(o->p[o->faces[i].t[0]], o->p[o->faces[i].t[1]], o->p[o->faces[i].t[2]]);
-		afficherTriangle3d(s, t, o->faces[i].c);
-		libererTriangle3d(t);
+		t_triangle3d t = definirTriangle3d(&(o->p[o->faces[i].t[0]]), &(o->p[o->faces[i].t[1]]), &(o->p[o->faces[i].t[2]]));
+		afficherTriangle3d(s, &t, o->faces[i].c);
 	}
 }
 
@@ -221,14 +219,14 @@ t_objet3d* copierObjet3d(t_objet3d* o)
 	cpy->np = o->np;
 	cpy->nfaces = o->nfaces;
 
-	cpy->p = (t_point3d**)malloc(cpy->np*sizeof(t_point3d*));
+	cpy->p = (t_point3d*)malloc(cpy->np*sizeof(t_point3d));
 	assert(cpy->p!=NULL);
 	cpy->faces = (t_face*)malloc(cpy->nfaces*sizeof(t_face));
 	assert(cpy->faces!=NULL);
 
 	for (size_t i=0; i<cpy->np; ++i)
 	{
-		cpy->p[i] = copierPoint3d(o->p[i]);
+		cpy->p[i] = o->p[i];
 	}
 
 	for (size_t i=0; i<cpy->nfaces; ++i)
@@ -239,19 +237,19 @@ t_objet3d* copierObjet3d(t_objet3d* o)
 	return cpy;
 }
 
-void concatenerObjet3d(t_objet3d *a, t_objet3d *b)
+void fusionnerObjet3d(t_objet3d *a, t_objet3d *b)
 {
 	assert(a!=NULL);
 	assert(b!=NULL);
 
-	a->p = realloc(a->p, (a->np+b->np)*sizeof(t_point3d*));
+	a->p = realloc(a->p, (a->np+b->np)*sizeof(t_point3d));
 	assert(a->p!=NULL);
 	a->faces = realloc(a->faces, (a->nfaces+b->nfaces)*sizeof(t_face));
 	assert(a->faces!=NULL);
 
 	for (size_t i=0; i<b->np; ++i)
 	{
-		a->p[a->np + i] = b->p[i]; // attention ici on ne copie que les pointeurs, il ne faut pas supprimer ces valeurs dans b... voir fin de fonction
+		a->p[a->np + i] = b->p[i];
 	}
 
 	for (size_t i=0; i<b->nfaces; ++i)
@@ -267,25 +265,8 @@ void concatenerObjet3d(t_objet3d *a, t_objet3d *b)
 	a->nfaces += b->nfaces;
 	a->est_trie = false;
 
-	// b sera libéré ailleurs, mais on veut préserver les points qu'on a juste copié...
-	b->p = NULL;
+	libererObjet3d(b);
 }
-
-#if 0
-static size_t nbFacesObjet3d(t_objet3d* o)
-{
-	assert(o!=NULL);
-
-	t_maillon *m = o->faces;
-	size_t n=0;
-	while (m!=NULL)
-	{
-		++n;
-		m = m->pt_suiv;
-	}
-	return n;
-}
-#endif
 
 // Function to swap the the position of two elements
 static void echange(t_face *a, t_face *b) {
@@ -294,9 +275,9 @@ static void echange(t_face *a, t_face *b) {
 	*b = temp;
 }
 
-static double val(t_point3d* tp[], t_face* f)
+static double val(t_point3d tp[], t_face* f)
 {
-	return (tp[f->t[0]]->xyzt[2]+tp[f->t[0]]->xyzt[2]+tp[f->t[0]]->xyzt[2])/3;
+	return (tp[f->t[0]].xyzt[2]+tp[f->t[0]].xyzt[2]+tp[f->t[0]].xyzt[2])/3;
 }
 static void tamiser(t_objet3d *o, int n, int i) {
 	// cherche le max entre la racine et ses deux enfants
@@ -413,6 +394,6 @@ void transformationObjet3d(t_objet3d *o, double mat[4][4])
 	t_point3d p;
 	for (size_t i=0; i<o->np; ++i)
 	{
-		transformationPoint3d(o->p[i], mat, &p);
+		transformationPoint3d(&o->p[i], mat, &p);
 	}
 }

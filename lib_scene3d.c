@@ -52,8 +52,7 @@ static void _construction_rec(t_node* pt_node, double mat[4][4], t_objet3d *o)
 	{
 		t_objet3d *tmp_obj = copierObjet3d(pt_node->pt_objet);
 		transformationObjet3d(tmp_obj, tmp_mat);
-		concatenerObjet3d(o, tmp_obj);
-		libererObjet3d(tmp_obj);
+		fusionnerObjet3d(o, tmp_obj); // la fusion s'occupe de libérer la mémoire...
 	}
 
 	_construction_rec(pt_node->pt_fils, tmp_mat, o);
