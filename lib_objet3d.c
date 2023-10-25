@@ -177,7 +177,7 @@ t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2)
 
 	// réduction des tableaux à leur taille réelle
 	o->np = l;
-	o->p = realloc(o->p, o->np*sizeof(t_point3d*));
+	o->p = realloc(o->p, o->np*sizeof(t_point3d));
 	assert(o->p!=NULL);
 	o->nfaces = lf;
 	o->faces = realloc(o->faces, o->nfaces*sizeof(t_face));
