@@ -97,14 +97,13 @@ void afficherTriangle3d(t_surface *s, t_triangle3d *t, Uint32 couleur)
 	assert(s!=NULL);
 	assert(t!=NULL);
 
-	t_triangle2d *t2d = definirTriangle2d(\
-		definirPoint2d((int)(t->abc[0]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[0]->xyzt[1]+t_surface_y(s)/2)), \
-		definirPoint2d((int)(t->abc[1]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[1]->xyzt[1]+t_surface_y(s)/2)), \
-		definirPoint2d((int)(t->abc[2]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[2]->xyzt[1]+t_surface_y(s)/2))
-		);
+	t_point2d p[3];
+	p[0] = definirPoint2d((int)(t->abc[0]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[0]->xyzt[1]+t_surface_y(s)/2));
+	p[1] = definirPoint2d((int)(t->abc[1]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[1]->xyzt[1]+t_surface_y(s)/2));
+	p[2] = definirPoint2d((int)(t->abc[2]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[2]->xyzt[1]+t_surface_y(s)/2));
 
-	afficherTriangle2d(s, t2d, couleur);
-	libererTriangle2d(t2d);
+	t_triangle2d t2d = definirTriangle2d(&p[0], &p[1], &p[2]);
+	afficherTriangle2d(s, &t2d, couleur);
 }
 
 void transformationTriangle3d(t_triangle3d *t, double mat[4][4])
