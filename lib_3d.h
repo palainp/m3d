@@ -23,6 +23,8 @@ t_point3d* copierPoint3d(t_point3d* p);
 t_vecteur3d* definirVecteur3d(double x, double y, double z);
 void libererVecteur3d(t_vecteur3d *p);
 
+void transformationPoint3d(t_point3d *p, double mat[4][4], t_point3d* tmp); // tmp sert pour limiter le nombre d'allocation, optimisation prématurée ?
+
 t_triangle3d* definirTriangle3d(t_point3d* a, t_point3d* b, t_point3d* c);
 void libererTriangle3d(t_triangle3d *t);
 t_triangle3d* copierTriangle3d(t_triangle3d* t);

@@ -38,7 +38,7 @@ void lierScene3d(t_scene3d pt_pere, t_scene3d pt_fils)
 	pt_pere->pt_fils = pt_fils;
 }
 
-static void _construction_rec(t_surface *s, t_node* pt_node, double mat[4][4], t_objet3d *o)
+static void _construction_rec(t_node* pt_node, double mat[4][4], t_objet3d *o)
 {
 	if (pt_node==NULL)
 		return;
@@ -56,8 +56,8 @@ static void _construction_rec(t_surface *s, t_node* pt_node, double mat[4][4], t
 		libererObjet3d(tmp_obj);
 	}
 
-	_construction_rec(s, pt_node->pt_fils, tmp_mat, o);
-	_construction_rec(s, pt_node->pt_frere, mat, o);
+	_construction_rec(pt_node->pt_fils, tmp_mat, o);
+	_construction_rec(pt_node->pt_frere, mat, o);
 }
 
 
@@ -84,7 +84,7 @@ void afficherScene3d(t_surface *s, t_scene3d scene)
 	t_objet3d* o = objet_vide();
 
 	assert(prec_node!=NULL);
-	_construction_rec(s, prec_node, mat, o);
+	_construction_rec(prec_node, mat, o);
 
 	trierObjet3d(o);
 	afficherObjet3d(s, o);

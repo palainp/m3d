@@ -54,6 +54,12 @@ void libererVecteur3d(t_vecteur3d *p)
 	free(p);
 }
 
+void transformationPoint3d(t_point3d *p, double mat[4][4], t_point3d* tmp)
+{
+	_copierPoint3d(tmp, p);
+	mult_vecteur(p, mat, tmp);
+}
+
 t_triangle3d* definirTriangle3d(t_point3d* a, t_point3d* b, t_point3d* c)
 {
 	assert(a!=NULL);
@@ -196,7 +202,6 @@ void transformationTriangle3d(t_triangle3d *t, double mat[4][4])
 	t_point3d p;
 	for (size_t i=0; i<3; ++i)
 	{
-		_copierPoint3d(&p, t->abc[i]);
-		mult_vecteur(t->abc[i], mat, &p);
+		transformationPoint3d(t->abc[i], mat, &p);
 	}
 }

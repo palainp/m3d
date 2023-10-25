@@ -5,16 +5,17 @@
 #include "lib_surface.h"
 #include "lib_3d.h"
 
-typedef struct _t_maillon {
-	t_triangle3d* t;
+typedef struct {
+	size_t t[3];
 	Uint32 c;
-	struct _t_maillon* pt_suiv;
-} t_maillon;
-typedef t_maillon* t_liste;
+} t_face;
 
 typedef struct {
 	bool est_trie, est_camera;
-	t_liste faces;
+	t_point3d** p; // p est un tableau de ptr sur des points
+	size_t np;
+	t_face* faces; // face est un tableau d'indices de points
+	size_t nfaces;
 } t_objet3d;
 
 t_objet3d* objet_vide();

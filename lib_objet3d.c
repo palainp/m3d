@@ -4,39 +4,14 @@
 #include "lib_objet3d.h"
 #include "lib_mat.h"
 
-t_maillon* creer_maillon(t_triangle3d* t, Uint32 c)
+static t_face definirFace(size_t a, size_t b, size_t c, Uint32 couleur)
 {
-	t_maillon *m = (t_maillon*)malloc(sizeof(t_maillon));
-	if (m!=NULL)
-	{
-		m->t = t;
-		m->c = c;
-		m->pt_suiv = NULL;
-	}
-	return m;
-}
-
-void liberer_maillon(t_maillon *m)
-{
-	assert(m!=NULL);
-	libererTriangle3d(m->t);
-	free(m);
-}
-
-void inserer_tete(t_liste* l, t_maillon* m)
-{
-	assert(l!=NULL);
-	assert(m!=NULL);
-	m->pt_suiv = *l;
-	*l = m;
-}
-
-void inserer_apres(t_maillon* x, t_maillon* m)
-{
-	assert(x!=NULL);
-	assert(m!=NULL);
-	m->pt_suiv = x->pt_suiv;
-	x->pt_suiv = m;
+	t_face f;
+	f.t[0] = a;
+	f.t[1] = b;
+	f.t[2] = c;
+	f.c = couleur;
+	return f;
 }
 
 t_objet3d* objet_vide()
@@ -46,7 +21,10 @@ t_objet3d* objet_vide()
 	{
 		o->est_trie = true;
 		o->est_camera = false;
+		o->p = NULL;
+		o->np = 0;
 		o->faces = NULL;
+		o->nfaces = 0;
 	}
 	return o;
 }
@@ -59,7 +37,6 @@ t_objet3d* camera()
 	return o;
 }
 
-
 t_objet3d* cube(int l)
 {
 	assert(l>0);
@@ -69,55 +46,40 @@ t_objet3d* cube(int l)
 	t_objet3d *o = objet_vide();
 	assert(o!=NULL);
 
-	t_point3d* t[8];
-	t[0] = definirPoint3d(xm, ym, zm);
-	t[1] = definirPoint3d(xM, ym, zm);
-	t[2] = definirPoint3d(xM, yM, zm);
-	t[3] = definirPoint3d(xm, yM, zm);
-	t[4] = definirPoint3d(xm, ym, zM);
-	t[5] = definirPoint3d(xM, ym, zM);
-	t[6] = definirPoint3d(xM, yM, zM);
-	t[7] = definirPoint3d(xm, yM, zM);
+	o->np = 8;
+	o->p = (t_point3d**)malloc(o->np*sizeof(t_point3d*));
+	assert(o->p!=NULL);
+	o->p[0] = definirPoint3d(xm, ym, zm);
+	o->p[1] = definirPoint3d(xM, ym, zm);
+	o->p[2] = definirPoint3d(xM, yM, zm);
+	o->p[3] = definirPoint3d(xm, yM, zm);
+	o->p[4] = definirPoint3d(xm, ym, zM);
+	o->p[5] = definirPoint3d(xM, ym, zM);
+	o->p[6] = definirPoint3d(xM, yM, zM);
+	o->p[7] = definirPoint3d(xm, yM, zM);
+
+	o->nfaces = 12;
+	o->faces = (t_face*)malloc(o->nfaces*sizeof(t_face));
+	assert(o->faces!=NULL);
 
 	// face arrière
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[0], t[1], t[2]), ROUGEC));
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[0], t[2], t[3]), BLANC));
+	o->faces[0] = definirFace(0, 1, 2, ROUGEC);
+	o->faces[1] = definirFace(0, 2, 3, BLANC);
 	// face avant
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[4], t[5], t[6]), VERTC));
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[4], t[6], t[7]), BLEUC));
+	o->faces[2] = definirFace(4, 5, 6, VERTC);
+	o->faces[3] = definirFace(4, 6, 7, BLEUC);
 	// face gauche
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[0], t[4], t[7]), JAUNEF));
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[0], t[7], t[3]), ROSEF));
+	o->faces[4] = definirFace(0, 4, 7, JAUNEF);
+	o->faces[5] = definirFace(0, 7, 3, ROSEF);
 	// face doite
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[1], t[5], t[6]), MAUVE));
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[1], t[6], t[2]), ORANGE));
+	o->faces[6] = definirFace(1, 5, 6, MAUVE);
+	o->faces[7] = definirFace(1, 6, 2, ORANGE);
 	// face haut
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[3], t[2], t[6]), MARRON1));
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[3], t[6], t[7]), MARRON3));
+	o->faces[8] = definirFace(3, 2, 6, MARRON1);
+	o->faces[9] = definirFace(3, 6, 7, MARRON3);
 	// face bas
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[0], t[1], t[5]), PALEC));
-	inserer_tete(&(o->faces), creer_maillon(\
-		definirTriangle3d(t[0], t[5], t[4]), GRISC));
-
-	libererPoint3d(t[0]);
-	libererPoint3d(t[1]);
-	libererPoint3d(t[2]);
-	libererPoint3d(t[3]);
-	libererPoint3d(t[4]);
-	libererPoint3d(t[5]);
-	libererPoint3d(t[6]);
-	libererPoint3d(t[7]);
+	o->faces[10] = definirFace(0, 1, 5, PALEC);
+	o->faces[11] = definirFace(0, 5, 4, GRISC);
 
 	o->est_trie = false;
 	return o;
@@ -133,10 +95,15 @@ t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2)
 	t_objet3d *o = objet_vide();
 	assert(o!=NULL);
 
-	t_point3d** t;
-	size_t l=0, max=100;
-	t = (t_point3d**)malloc(max*sizeof(t_point3d*));
-	assert(t!=NULL);
+	size_t l=0;
+	o->np = 100;
+	o->p = (t_point3d**)malloc(o->np*sizeof(t_point3d*));
+	assert(o->p!=NULL);
+
+	size_t lf=0;
+	o->nfaces = 100;
+	o->faces = (t_face*)malloc(o->nfaces*sizeof(t_face));
+	assert(o->faces!=NULL);
 
 	size_t nl = 0;
 	char ligne[256];
@@ -158,31 +125,31 @@ t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2)
 				fprintf(stderr, "%s:%d Syntax Error %s:%lu\n", __FILE__, __LINE__, fn, nl);
 			}
 
-			if (l>=max)
+			if (l>=o->np)
 			{
-				max = (size_t)((double)max*1.5);
-				t = realloc(t, max*sizeof(t_point3d*));
-				assert(t!=NULL);
+				o->np = (size_t)((double)o->np*1.5);
+				o->p = realloc(o->p, o->np*sizeof(t_point3d*));
+				assert(o->p!=NULL);
 			}
 
 //			printf("lecture point (%lu/%lu): %f %f %f\n", l, max, x, y, z);
 
-			t[l] = definirPoint3d(x,y,z);
+			o->p[l] = definirPoint3d(x,y,z);
 			l++;
 		} else if (ligne[0]=='f') {
-			int i,j,k;
-			int in,jn,kn;
-			int it,jt,kt;
+			size_t i,j,k;
+			size_t in,jn,kn;
+			size_t it,jt,kt;
 
 			size_t z=1;
 			while (!(z==sizeof(ligne) || ligne[z]!=' ' || ligne[z]!='\t')) ++z;
 			assert(z!=sizeof(ligne));
 			assert(ligne[z]!='\n');
 
-			if (!(sscanf(&(ligne[z]), "%d// %d// %d//\n", &i, &j, &k)==3 || \
-				sscanf(&(ligne[z]), "%d %d %d\n", &i, &j, &k)==3 || \
-				sscanf(&(ligne[z]), "%d//%d %d//%d %d//%d\n", &i, &in, &j, &jn, &k, &kn)==6 || \
-				sscanf(&(ligne[z]), "%d/%d/%d %d/%d/%d %d/%d/%d\n", &i, &it, &in, &j, &jt, &jn, &k, &kt, &kn)==9))
+			if (!(sscanf(&(ligne[z]), "%lu// %lu// %lu//\n", &i, &j, &k)==3 || \
+				sscanf(&(ligne[z]), "%lu %lu %lu\n", &i, &j, &k)==3 || \
+				sscanf(&(ligne[z]), "%lu//%lu %lu//%lu %lu//%lu\n", &i, &in, &j, &jn, &k, &kn)==6 || \
+				sscanf(&(ligne[z]), "%lu/%lu/%lu %lu/%lu/%lu %lu/%lu/%lu\n", &i, &it, &in, &j, &jt, &jn, &k, &kt, &kn)==9))
 			{
 				fprintf(stderr, "%s:%d Syntax Error %s:%lu\n", __FILE__, __LINE__, fn, nl);
 			}
@@ -195,16 +162,27 @@ t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2)
 			assert((size_t)i<l);
 			assert((size_t)j<l);
 			assert((size_t)k<l);
-			t_triangle3d *tr = definirTriangle3d(t[i], t[j], t[k]);
-			inserer_tete(&(o->faces), creer_maillon(\
-					tr, couleur_entre(rand()%100, c1, c2)));
+
+			if (lf>=o->nfaces)
+			{
+				o->nfaces = (size_t)((double)o->nfaces*1.5);
+				o->faces = realloc(o->faces, o->nfaces*sizeof(t_face));
+				assert(o->faces!=NULL);
+			}
+
+			o->faces[lf] = definirFace(i, j, k, couleur_entre(rand()%100, c1, c2));
+			lf++;
 		}
 	}
-	for(size_t i=0; i<l; ++i)
-	{
-		libererPoint3d(t[i]);
-	}
-	free(t);
+
+	// réduction des tableaux à leur taille réelle
+	o->np = l;
+	o->p = realloc(o->p, o->np*sizeof(t_point3d*));
+	assert(o->p!=NULL);
+	o->nfaces = lf;
+	o->faces = realloc(o->faces, o->nfaces*sizeof(t_face));
+	assert(o->faces!=NULL);
+
 	return o;
 }
 
@@ -212,13 +190,8 @@ void libererObjet3d(t_objet3d *o)
 {
 	assert(o!=NULL);
 
-	t_maillon *m = o->faces;
-	while (m!=NULL)
-	{
-		t_maillon *s = m->pt_suiv;
-		liberer_maillon(m);
-		m = s;
-	}
+	free(o->p);
+	free(o->faces);
 	free(o);
 }
 
@@ -227,14 +200,12 @@ void afficherObjet3d(t_surface* s, t_objet3d* o)
 	assert(s!=NULL);
 	assert(o!=NULL);
 
-	if (!o->est_trie)
-		trierObjet3d(o);
-
-	t_maillon *m = o->faces;
-	while (m!=NULL)
+	for(size_t i=0; i<o->nfaces; ++i)
 	{
-		afficherTriangle3d(s, m->t, m->c);
-		m = m->pt_suiv;
+		// FIXME: ici on a une allocation mémoire pénible dans definirTriangle3d
+		t_triangle3d *t = definirTriangle3d(o->p[o->faces[i].t[0]], o->p[o->faces[i].t[1]], o->p[o->faces[i].t[2]]);
+		afficherTriangle3d(s, t, o->faces[i].c);
+		libererTriangle3d(t);
 	}
 }
 
@@ -245,15 +216,26 @@ t_objet3d* copierObjet3d(t_objet3d* o)
 	t_objet3d* cpy = objet_vide();
 	assert(cpy!=NULL);
 
-	t_maillon *m = o->faces;
-	while (m!=NULL)
+	cpy->est_trie = o->est_trie;
+	cpy->est_camera = o->est_camera;
+	cpy->np = o->np;
+	cpy->nfaces = o->nfaces;
+
+	cpy->p = (t_point3d**)malloc(cpy->np*sizeof(t_point3d*));
+	assert(cpy->p!=NULL);
+	cpy->faces = (t_face*)malloc(cpy->nfaces*sizeof(t_face));
+	assert(cpy->faces!=NULL);
+
+	for (size_t i=0; i<cpy->np; ++i)
 	{
-		inserer_tete(&(cpy->faces), creer_maillon(\
-				copierTriangle3d(m->t), m->c));
-		m = m->pt_suiv;
+		cpy->p[i] = copierPoint3d(o->p[i]);
 	}
 
-	cpy->est_trie = false;
+	for (size_t i=0; i<cpy->nfaces; ++i)
+	{
+		cpy->faces[i] = o->faces[i];
+	}
+
 	return cpy;
 }
 
@@ -262,16 +244,31 @@ void concatenerObjet3d(t_objet3d *a, t_objet3d *b)
 	assert(a!=NULL);
 	assert(b!=NULL);
 
-	t_maillon *m = b->faces;
-	while (m!=NULL)
+	a->p = realloc(a->p, (a->np+b->np)*sizeof(t_point3d*));
+	assert(a->p!=NULL);
+	a->faces = realloc(a->faces, (a->nfaces+b->nfaces)*sizeof(t_face));
+	assert(a->faces!=NULL);
+
+	for (size_t i=0; i<b->np; ++i)
 	{
-		t_maillon *suiv_m = m->pt_suiv;
-		inserer_tete(&(a->faces), m);
-		m = suiv_m;
+		a->p[a->np + i] = b->p[i]; // attention ici on ne copie que les pointeurs, il ne faut pas supprimer ces valeurs dans b... voir fin de fonction
 	}
 
+	for (size_t i=0; i<b->nfaces; ++i)
+	{
+		a->faces[a->nfaces + i] = definirFace(\
+			a->np + b->faces[i].t[0], \
+			a->np + b->faces[i].t[1], \
+			a->np + b->faces[i].t[2], \
+			b->faces[i].c);
+	}
+
+	a->np += b->np;
+	a->nfaces += b->nfaces;
 	a->est_trie = false;
-	b->faces = NULL;
+
+	// b sera libéré ailleurs, mais on veut préserver les points qu'on a juste copié...
+	b->p = NULL;
 }
 
 #if 0
@@ -290,6 +287,51 @@ static size_t nbFacesObjet3d(t_objet3d* o)
 }
 #endif
 
+// Function to swap the the position of two elements
+static void echange(t_face *a, t_face *b) {
+	t_face temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+static double val(t_point3d* tp[], t_face* f)
+{
+	return (tp[f->t[0]]->xyzt[2]+tp[f->t[0]]->xyzt[2]+tp[f->t[0]]->xyzt[2])/3;
+}
+static void tamiser(t_objet3d *o, int n, int i) {
+	// cherche le max entre la racine et ses deux enfants
+	int max = i;
+	int fg = 2*i+1;
+	int fd = 2*i+2;
+
+	if (fg<n && val(o->p, &o->faces[fg])>val(o->p, &o->faces[max]))
+		max = fg;
+	if (fd<n && val(o->p, &o->faces[fd])>val(o->p, &o->faces[max]))
+		max = fd;
+
+	// echange et continue si la racine n'est pas le max
+	if (max!=i) {
+		echange(&o->faces[i], &o->faces[max]);
+		tamiser(o, n, max);
+	}
+}
+
+void trierObjet3d(t_objet3d *o)			// Tri par tas : O(n*log(n))
+{
+	int n = (int)o->nfaces;
+	// construction du tas
+	for (int i=n/2-1; i>=0; --i)
+		tamiser(o, n, i);
+
+	// tri
+	for (int i=n-1; i>=0; --i) {
+		echange(&o->faces[0], &o->faces[i]);
+		tamiser(o, i, 0);
+	}
+	o->est_trie = true;
+}
+
+#if 0
 #if 1
 void decoupeListe(t_liste *a, t_liste *b) // O(n)
 {
@@ -448,6 +490,7 @@ void trierObjet3d(t_objet3d *o)			// O(n^2)
 	o->est_trie = true;
 }
 #endif
+#endif
 
 void translationObjet3d(t_objet3d *o, t_vecteur3d* v)
 {
@@ -528,10 +571,9 @@ void transformationObjet3d(t_objet3d *o, double mat[4][4])
 {
 	assert(o!=NULL);
 
-	t_maillon *m = o->faces;
-	while (m!=NULL)
+	t_point3d p;
+	for (size_t i=0; i<o->np; ++i)
 	{
-		transformationTriangle3d(m->t, mat);
-		m = m->pt_suiv;
+		transformationPoint3d(o->p[i], mat, &p);
 	}
 }
