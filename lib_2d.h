@@ -16,7 +16,6 @@ void libererPoint2d(t_point2d *p);
 
 t_triangle2d* definirTriangle2d(t_point2d* a, t_point2d* b, t_point2d* c);
 void libererTriangle2d(t_triangle2d *t);
-void afficherCoordonneesTriangle2d(t_triangle2d *t);
 
 void afficherTriangle2d(t_surface *s, t_triangle2d *t, Uint32 couleur);
 #endif

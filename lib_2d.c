@@ -43,17 +43,6 @@ void libererTriangle2d(t_triangle2d *t)
 	free(t);
 }
 
-void afficherCoordonneesTriangle2d(t_triangle2d *t)
-{
-	assert(t!=NULL);
-
-	for (size_t i=0; i<3; ++i)
-	{
-		printf("(%lu) %d %d\t", i, t->abc[i]->x, t->abc[i]->y);
-	}
-	printf("\n");
-}
-
 void _echangerPoint2d(t_triangle2d *t, size_t i, size_t j)
 {
 	assert(t!=NULL);

@@ -92,13 +92,6 @@ t_triangle3d* copierTriangle3d(t_triangle3d* t)
 	return definirTriangle3d(t->abc[0], t->abc[1], t->abc[2]);
 }
 
-double zmoyen(t_triangle3d* t)
-{
-	assert(t!=NULL);
-	return (t->abc[0]->xyzt[2]+t->abc[1]->xyzt[2]+t->abc[2]->xyzt[2])/3;
-}
-
-
 void afficherTriangle3d(t_surface *s, t_triangle3d *t, Uint32 couleur)
 {
 	assert(s!=NULL);
@@ -109,90 +102,9 @@ void afficherTriangle3d(t_surface *s, t_triangle3d *t, Uint32 couleur)
 		definirPoint2d((int)(t->abc[1]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[1]->xyzt[1]+t_surface_y(s)/2)), \
 		definirPoint2d((int)(t->abc[2]->xyzt[0]+t_surface_x(s)/2), (int)(-t->abc[2]->xyzt[1]+t_surface_y(s)/2))
 		);
-#if 0
-	afficherCoordonneesTriangle2d(t2d);
-#endif
+
 	afficherTriangle2d(s, t2d, couleur);
 	libererTriangle2d(t2d);
-}
-
-void translationTriangle3d(t_triangle3d *t, t_vecteur3d* v)
-{
-	assert(t!=NULL);
-	assert(v!=NULL);
-
-	double mat[4][4] = {\
-		{1, 0, 0, v->xyzt[0]}, \
-		{0, 1, 0, v->xyzt[1]}, \
-		{0, 0, 1, v->xyzt[2]}, \
-		{0, 0, 0, 1}\
-	};
-	transformationTriangle3d(t, mat);
-}
-
-void rotationTriangle3d(t_triangle3d *t, t_point3d *c, double x, double y, double z)
-{
-	assert(t!=NULL);
-	assert(c!=NULL);
-
-	double tra1[4][4] = {\
-		{1, 0, 0, -c->xyzt[0]}, \
-		{0, 1, 0, -c->xyzt[1]}, \
-		{0, 0, 1, -c->xyzt[2]}, \
-		{0, 0, 0, 1}\
-	};
-	double tra2[4][4] = {\
-		{1, 0, 0, c->xyzt[0]}, \
-		{0, 1, 0, c->xyzt[1]}, \
-		{0, 0, 1, c->xyzt[2]}, \
-		{0, 0, 0, 1}\
-	};
-	double radX = x*M_PI/180, radY = y*M_PI/180, radZ = z*M_PI/180;
-	double rotX[4][4] = {\
-		{1, 0,     0,      0}, \
-		{0, cos(radX), -sin(radX), 0}, \
-		{0, sin(radX), cos(radX),  0}, \
-		{0, 0,     0,      1}\
-	};
-	double rotY[4][4] = {\
-		{cos(radY), 0, -sin(radY), 0}, \
-		{0,     1, 0,      0}, \
-		{sin(radY), 0, cos(radY),  0}, \
-		{0,     0, 0,      1}\
-	};
-	double rotZ[4][4] = {\
-		{cos(radZ), -sin(radZ), 0, 0}, \
-		{sin(radZ), cos(radZ),  0, 0}, \
-		{0,     0,      1, 0}, \
-		{0,     0,      0, 1}\
-	};
-#if 0
-	transformationTriangle3d(t, tra1);
-	transformationTriangle3d(t, rotX);
-	transformationTriangle3d(t, rotY);
-	transformationTriangle3d(t, rotZ);
-	transformationTriangle3d(t, tra2);
-#else
-	double tmp[4][4], tmp2[4][4];
-	mult_mat(tmp, rotX, tra1);
-	mult_mat(tmp2, rotY, tmp);
-	mult_mat(tmp, rotZ, tmp2);
-	mult_mat(tmp2, tra2, tmp);
-	transformationTriangle3d(t, tmp2);
-#endif
-}
-
-void homothetieTriangle3d(t_triangle3d *t, double x, double y, double z)
-{
-	assert(t!=NULL);
-
-	double mat[4][4] = {\
-		{x, 0, 0, 0}, \
-		{0, y, 0, 0}, \
-		{0, 0, z, 0}, \
-		{0, 0, 0, 1}\
-	};
-	transformationTriangle3d(t, mat);
 }
 
 void transformationTriangle3d(t_triangle3d *t, double mat[4][4])

@@ -28,13 +28,9 @@ void transformationPoint3d(t_point3d *p, double mat[4][4], t_point3d* tmp); // t
 t_triangle3d* definirTriangle3d(t_point3d* a, t_point3d* b, t_point3d* c);
 void libererTriangle3d(t_triangle3d *t);
 t_triangle3d* copierTriangle3d(t_triangle3d* t);
-double zmoyen(t_triangle3d* t);
 
 void afficherTriangle3d(t_surface *s, t_triangle3d *t, Uint32 couleur);
 
-void translationTriangle3d(t_triangle3d *t, t_vecteur3d* v);
-void rotationTriangle3d(t_triangle3d *t, t_point3d *c, double x, double y, double z);
-void homothetieTriangle3d(t_triangle3d *t, double x, double y, double z);
 void transformationTriangle3d(t_triangle3d *t, double mat[4][4]);
 
 #endif
