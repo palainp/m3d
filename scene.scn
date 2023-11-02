@@ -1,14 +1,38 @@
+
+couleur BLANC  0x00ffffff
+couleur GRISC  0x00aaaaaa
+couleur GRISF  0x00555555
+couleur NOIR   0x00000000
+couleur ROUGEC 0x00ff0000
+couleur ROUGEF 0x00880000
+couleur VERTC  0x0000ff00
+couleur VERTF  0x00008800
+couleur BLEUC  0x000000ff
+couleur BLEUF  0x00000088
+couleur JAUNEC 0x00ffff00
+couleur JAUNEF 0x00888800
+couleur PALEC  0x0000ffff
+couleur PALEF  0x00008888
+couleur ROSEC  0x00ff00ff
+couleur ROSEF  0x00880088
+couleur MARRON1 0x00AD4F09
+couleur MARRON2 0x00A76726
+couleur MARRON3 0x0088421D
+couleur MARRON4 0x00AE642D
+couleur MAUVE   0x007F29DA
+couleur ORANGE	0x00ED7F10
+
 point origine 0.0 0.0 0.0
 vecteur v1 0.0 80.0 0.0
 vecteur v2 0.0 -80.0 0.0
 vecteur v3 0.0 0.0 100.0
 
-objet cb "./cube.obj" 0x0000FF 0xFF0000
+objet cb "./cube.obj" VERTC BLEUF
 homothetie cb 60.0 150.0 150.0
 rotation cb origine 180.0 0.0 0.0
 translation cb v2
 
-objet cow "cow_500.obj" 0x00FF00 0x0000FF
+objet cow "cow-nonormals.obj" ROUGEC BLANC
 homothetie cow 50.0 50.0 50.0
 translation cow v1
 

@@ -16,18 +16,20 @@ char texte[256];
 enum {
 	POINT=0,
 	VECTEUR,
+	COULEUR,
 	OBJET,
 	CAMERA,
 	SCENE,
 	SCENECAMERA,
 };
 
-char* type_str[] = {"point", "vecteur", "objet", "camera", "scene_objet", "scene_camera"};
+char* type_str[] = {"point", "vecteur", "couleur", "objet", "camera", "scene_objet", "scene_camera"};
 
 struct lst {
 	char* nom;
 	size_t type;
 	union {
+		Uint32      c;
 		t_point3d   p;
 		t_vecteur3d v;
 		t_objet3d*  o;
@@ -43,8 +45,9 @@ static void liberer_elements(void);
 
 %}
 
-%token T_COULEUR
+%token T_ENTIER
 %token T_FLOTTANT
+%token T_COULEUR
 %token T_ID
 %token T_CHEMIN
 %token T_SCENE
@@ -78,6 +81,7 @@ elements
 	| elements nouv_objet
 	| elements nouv_point
 	| elements nouv_vecteur
+	| elements nouv_couleur
 	| elements operation
 	;
 
@@ -90,11 +94,19 @@ schemin
 	;
 
 couleur
-	: T_COULEUR { $$ = (Uint32)entier; }
+	: T_ENTIER { $$ = (Uint32)entier; }
 	;
 
 coordonnee
 	: T_FLOTTANT { $$ = flottant; }
+	;
+
+nouv_couleur
+	: T_COULEUR sid couleur {
+		char* nom = $2;
+		insere_element(&$3, COULEUR, nom);
+		free(nom);
+	}
 	;
 
 nouv_scene
@@ -124,6 +136,50 @@ nouv_objet
 		insere_element(fichierObjet3d(chemin, $4, $5), OBJET, nom);
 		free(nom);
 		free(chemin);
+	}
+	| T_OBJET sid schemin sid couleur {
+		char* nom = $2;
+		char* chemin = $3;
+		char* c1 = $4;
+
+		struct lst* c = cherche_element(c1);
+		if (c==NULL || c->type!=COULEUR) fatal("'%s' is not a color");
+
+		insere_element(fichierObjet3d(chemin, c->u.c, $5), OBJET, nom);
+		free(nom);
+		free(chemin);
+		free(c1);
+	}
+	| T_OBJET sid schemin couleur sid {
+		char* nom = $2;
+		char* chemin = $3;
+		char* c2 = $5;
+
+		struct lst* cc = cherche_element(c2);
+		if (cc==NULL || cc->type!=COULEUR) fatal("'%s' is not a color");
+
+		insere_element(fichierObjet3d(chemin, $4, cc->u.c), OBJET, nom);
+		free(nom);
+		free(chemin);
+		free(c2);
+	}
+	| T_OBJET sid schemin sid sid {
+		char* nom = $2;
+		char* chemin = $3;
+		char* c1 = $4;
+		char* c2 = $5;
+
+		struct lst* c = cherche_element(c1);
+		if (c==NULL || c->type!=COULEUR) fatal("'%s' is not a color");
+		struct lst* cc = cherche_element(c2);
+		if (cc==NULL || cc->type!=COULEUR) fatal("'%s' is not a color");
+
+
+		insere_element(fichierObjet3d(chemin, c->u.c, cc->u.c), OBJET, nom);
+		free(nom);
+		free(chemin);
+		free(c1);
+		free(c2);
 	}
 	| T_CAMERA sid {
 		char* nom = $2;
@@ -219,7 +275,7 @@ operation
 		free(enfant);
 	}
 	;
-		
+
 %%
 
     
@@ -251,6 +307,9 @@ static void insere_element(void* p, size_t type, const char* nom)
 		case SCENE:
 		case SCENECAMERA:
 			tmp->u.s = (t_node*)p;
+			break;
+		case COULEUR:
+			memcpy(&tmp->u.c, p, sizeof(Uint32));
 			break;
 		default:
 			fatal("type '%s' is not defined", type);

@@ -11,6 +11,7 @@ SP [ \t]+
 %%
 
 scene { return T_SCENE; }
+couleur { return T_COULEUR; }
 objet { return T_OBJET; }
 camera { return T_CAMERA; }
 point { return T_POINT; }
@@ -27,7 +28,7 @@ liaison { return T_LIAISON; }
 
 0x[0-9A-Fa-f]+ {
 	sscanf(yytext, "%X", &entier);
-	return T_COULEUR;
+	return T_ENTIER;
 }
 
 [A-Za-z]+[A-Za-z_0-9]* {
