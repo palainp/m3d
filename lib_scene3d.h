@@ -13,16 +13,21 @@ typedef struct _node {
 	struct _node* pt_fils;
 	struct _node* pt_frere;
 } t_node;
-typedef t_node* t_scene3d;
 
-t_scene3d creerScene3d(t_objet3d* pt_objet);
-void lierScene3d(t_scene3d pt_pere, t_scene3d pt_fils);
-void afficherScene3d(t_surface *s, t_scene3d scene);
+#define MAX_CAM 10
+typedef struct {
+	t_node* cam[MAX_CAM];
+	size_t n_cam;
+} t_scene3d;
 
-void libererScene3d(t_scene3d scene);
+t_node* creerScene3d(t_objet3d* pt_objet);
+void lierScene3d(t_node* pt_pere, t_node* pt_fils);
+void afficherScene3d(t_surface *s, t_node* scene);
 
-void translationScene3d(t_scene3d scn, t_vecteur3d* v);
-void rotationScene3d(t_scene3d scn, t_point3d *c, double x, double y, double z);
-void transformationScene3d(t_scene3d scn, double montant[4][4], double descendant[4][4]);
+void libererScene3d(t_node* scene);
+
+void translationScene3d(t_node* scn, t_vecteur3d* v);
+void rotationScene3d(t_node* scn, t_point3d *c, double x, double y, double z);
+void transformationScene3d(t_node* scn, double montant[4][4], double descendant[4][4]);
 
 #endif

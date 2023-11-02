@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <assert.h>
 #include "lib_surface.h"
 #include "lib_2d.h"
 #include "lib_3d.h"
@@ -13,8 +14,10 @@ SDL_Event event;
 int x = 0, y = 0;
 bool is_button_down = false;
 const Uint8 *currentKeyStates = NULL;
-t_scene3d cam;
-t_point3d origine;
+t_node* camera_active;
+static t_point3d origine;
+
+t_scene3d charger_scene3d(const char* fn);
 
 bool handle_events()
 {
@@ -24,7 +27,7 @@ bool handle_events()
 	if (event.type == SDL_QUIT || currentKeyStates[SDL_SCANCODE_Q]) {
 		return true;
 	} else if (event.type == SDL_MOUSEMOTION && is_button_down) {
-		rotationScene3d(cam, &origine, y-event.motion.y, x-event.motion.x, 0);
+		rotationScene3d(camera_active, &origine, y-event.motion.y, x-event.motion.x, 0);
 		x = event.motion.x;
 		y = event.motion.y;
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -38,7 +41,7 @@ bool handle_events()
 	return false;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
 	t_surface *surface = NULL;
 	int cpt = 0;
@@ -52,27 +55,18 @@ int main()
 	timestart = SDL_GetTicks();
 	oldtime = timestart;
 
+	if (argc-1!=1)
+	{
+		fprintf(stderr, "Usage: %s <scene>\n", argv[0]);
+		exit(EXIT_FAILURE);
+	}
+
 	origine = definirPoint3d(0,0,0);
-	t_vecteur3d v1 = definirVecteur3d(0,80,0);
-	t_vecteur3d v2 = definirVecteur3d(0,-80,0);
-	t_vecteur3d v3 = definirVecteur3d(0,0,100);
-
-	t_objet3d* cb = fichierObjet3d("cube.obj", BLANC, ROUGEC);
-	homothetieObjet3d(cb, 60, 150, 150);
-	rotationObjet3d(cb, &origine, 180, 0, 0);
-	translationObjet3d(cb, &v2);
-
-	t_objet3d* cow = fichierObjet3d("cow-nonormals.obj", BLANC, NOIR);
-	homothetieObjet3d(cow, 50, 50, 50);
-	translationObjet3d(cow, &v1);
-
-	t_objet3d* cmr = camera();
-
-	cam = creerScene3d(cmr);
-	translationScene3d(cam, &v3);
-	t_scene3d root = creerScene3d(cow);
-	lierScene3d(root, cam);
-	lierScene3d(root, creerScene3d(cb));
+	printf("Loading scene '%s'...", argv[1]); fflush(stdout);
+	t_scene3d scn = charger_scene3d(argv[1]);
+	printf("done\n");
+	assert(scn.n_cam>0);
+	camera_active = scn.cam[0];
 
 	while (++i < DUREE * 60 && !quit_requested)	// DUREE " * 60FPS
 	{
@@ -82,7 +76,7 @@ int main()
 			quit_requested = handle_events();
 		}
 
-		afficherScene3d(surface, cam);
+		afficherScene3d(surface, camera_active);
 		majEcran(surface);
 
 		/* Framerate fixe a env 60 FPS max */
@@ -95,7 +89,7 @@ int main()
 	}
 
 	libererFenetre(surface);
-	libererScene3d(root);
+	libererScene3d(camera_active);
 
 	return 0;
 }

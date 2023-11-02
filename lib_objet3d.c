@@ -109,6 +109,7 @@ t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2)
 	char ligne[256];
 	while (fgets(ligne, sizeof(ligne), fd)!=NULL)
 	{
+
 		++nl;
 		if (ligne[0]=='v' && (ligne[1]==' ' || ligne[1]=='\t')) // définition d'un point
 		{
@@ -118,7 +119,7 @@ t_objet3d* fichierObjet3d(const char* fn, Uint32 c1, Uint32 c2)
 			while (!(j==sizeof(ligne) || ligne[j]!=' ' || ligne[j]!='\t')) ++j;
 			assert(j!=sizeof(ligne));
 			assert(ligne[j]!='\n');
-					
+
 			int r = sscanf(&(ligne[j]), "%f %f %f\n", &x, &y, &z);
 			if (r==EOF)
 			{

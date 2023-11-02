@@ -1,0 +1,26 @@
+point origine 0.0 0.0 0.0
+vecteur v1 0.0 80.0 0.0
+vecteur v2 0.0 -80.0 0.0
+vecteur v3 0.0 0.0 100.0
+
+objet cb "./cube.obj" 0x0 0xFF0000
+homothetie cb 60.0 150.0 150.0
+rotation cb origine 180.0 0.0 0.0
+translation cb v2
+
+objet cow "cow_500.obj" 0x00FF00 0x0
+homothetie cow 50.0 50.0 50.0
+translation cow v1
+
+# la racine de l'arbre est la vache
+scene root cow
+
+# on accroche la caméra 1 sur le dos de la vache
+camera cmr
+scene cam cmr
+liaison root cam
+
+# on accroche un cube sous la vache
+scene cube cb
+liaison root cube
+

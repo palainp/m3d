@@ -10,7 +10,7 @@
 	{0, 0, 0, 1} \
 }
 
-t_scene3d creerScene3d(t_objet3d* pt_objet)
+t_node* creerScene3d(t_objet3d* pt_objet)
 {
 	assert(pt_objet != NULL);
 
@@ -28,7 +28,7 @@ t_scene3d creerScene3d(t_objet3d* pt_objet)
 
 }
 
-void lierScene3d(t_scene3d pt_pere, t_scene3d pt_fils)
+void lierScene3d(t_node* pt_pere, t_node* pt_fils)
 {
 	assert(pt_pere != NULL);
 	assert(pt_fils != NULL);
@@ -60,7 +60,7 @@ static void _construction_rec(t_node* pt_node, double mat[4][4], t_objet3d *o)
 }
 
 
-void afficherScene3d(t_surface *s, t_scene3d scene)
+void afficherScene3d(t_surface *s, t_node* scene)
 {
 	assert(s!=NULL);
 	assert(scene!=NULL);
@@ -90,18 +90,34 @@ void afficherScene3d(t_surface *s, t_scene3d scene)
 	libererObjet3d(o);
 }
 
-void libererScene3d(t_scene3d scene)
+static void _libererScene_rec(t_node* scene)
 {
 	if (scene==NULL)
 		return;
-	
-	libererScene3d(scene->pt_fils);
-	libererScene3d(scene->pt_frere);
+
+	_libererScene_rec(scene->pt_fils);
+	_libererScene_rec(scene->pt_frere);
 	libererObjet3d(scene->pt_objet);
 	free(scene);
 }
 
-void translationScene3d(t_scene3d scn, t_vecteur3d* v)
+void libererScene3d(t_node* scene)
+{
+	if (scene==NULL)
+		return;
+
+	/* la scene est définie par sa caméra, il faut d'abord remonter à la racine puis tout libérer */
+	t_node *root = scene;
+	while (root->pt_pere!=NULL)
+	{
+		root = root->pt_pere;
+	}
+
+	/* root est la racine de la scene, on peut libérer en parcourant l'arbre */
+	_libererScene_rec(root);
+}
+
+void translationScene3d(t_node* scn, t_vecteur3d* v)
 {
 	assert(scn!=NULL);
 	assert(v!=NULL);
@@ -122,7 +138,7 @@ void translationScene3d(t_scene3d scn, t_vecteur3d* v)
 	transformationScene3d(scn, translation_inverse, translation);
 }
 
-void rotationScene3d(t_scene3d scn, t_point3d *c, double x, double y, double z)
+void rotationScene3d(t_node* scn, t_point3d *c, double x, double y, double z)
 {
 	assert(scn!=NULL);
 	assert(c!=NULL);
@@ -193,7 +209,7 @@ void rotationScene3d(t_scene3d scn, t_point3d *c, double x, double y, double z)
 	transformationScene3d(scn, rotation_inverse, rotation);
 }
 
-void transformationScene3d(t_scene3d scn, double montant[4][4], double descendant[4][4])
+void transformationScene3d(t_node* scn, double montant[4][4], double descendant[4][4])
 {
 	assert(scn!=NULL);
 	double tmp_mat[4][4];
@@ -202,3 +218,4 @@ void transformationScene3d(t_scene3d scn, double montant[4][4], double descendan
 	mult_mat(tmp_mat, scn->descendant, descendant);
 	copier_mat(scn->descendant, tmp_mat);
 }
+
