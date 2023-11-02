@@ -1,4 +1,4 @@
-
+# les couleurs définies dans lib_surface.h
 couleur BLANC  0x00ffffff
 couleur GRISC  0x00aaaaaa
 couleur GRISF  0x00555555
@@ -22,29 +22,43 @@ couleur MARRON4 0x00AE642D
 couleur MAUVE   0x007F29DA
 couleur ORANGE	0x00ED7F10
 
+# utilitaires pour manipuler les objets
 point origine 0.0 0.0 0.0
-vecteur v1 0.0 80.0 0.0
-vecteur v2 0.0 -80.0 0.0
+vecteur v1 -100.0 0.0 0.0
+vecteur v2 0.0 0.0 -400.0
 vecteur v3 0.0 0.0 100.0
+vecteur vfloor 0.0 -40.0 100.0
 
-objet cb "./cube.obj" VERTC BLEUF
-homothetie cb 60.0 150.0 150.0
-rotation cb origine 180.0 0.0 0.0
-translation cb v2
+# chargement des objets
+objet flo "./floor.obj" GRISF BLANC
+translation flo vfloor
 
-objet cow "cow-nonormals.obj" ROUGEC BLANC
-homothetie cow 50.0 50.0 50.0
+objet tr "./tree.obj" VERTC MARRON3
+homothetie tr 20.0 20.0 20.0
+rotation tr origine 0.0 90.0 0.0
+translation tr v2
+
+objet cow "cow_500.obj" ROUGEC BLANC
+homothetie cow 40.0 40.0 40.0
 translation cow v1
 
 # la racine de l'arbre est la vache
-scene root cow
+scene root flo
 
-# on accroche la caméra 1 sur le dos de la vache
+# on accroche la caméra 1 sur le sol
 camera cmr
 scene cam cmr
 liaison root cam
 
-# on accroche un cube sous la vache
-scene cube cb
-liaison root cube
+# on pose une vache sur le sol
+scene scow cow
+liaison root scow
 
+# on accroche la caméra 2 sur la vache
+camera cmr2
+scene cam2 cmr2
+liaison scow cam2
+
+# on pose l'arbre sur le sol
+scene tree tr
+liaison root tree
