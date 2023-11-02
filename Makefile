@@ -9,8 +9,8 @@ OPT_NORME=-Wall -Werror -Wextra -Wconversion -ansi -Wpedantic -Wno-unused-parame
 prog: prog.o lib_surface.o lib_2d.o lib_3d.o lib_mat.o lib_objet3d.o lib_scene3d.o chargement_scene3d.o
 	gcc ${OPT} ${OPT_NORME} -march=native $^ -o $@ -lm -lSDL2
 
-run: prog
-	./prog
+run: prog scene.scn
+	./prog ./scene.scn
 
 %.o: %.c %.h
 	gcc ${OPT} ${OPT_NORME} -c -march=native -o $@ $<

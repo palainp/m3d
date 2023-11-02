@@ -26,7 +26,7 @@ liaison { return T_LIAISON; }
 }
 
 0x[0-9A-Fa-f]+ {
-	entier = (uint32_t)atol(yytext);
+	sscanf(yytext, "%X", &entier);
 	return T_COULEUR;
 }
 
